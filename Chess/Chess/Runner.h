@@ -8,5 +8,4 @@ public:
 	virtual ~Runner();
 	virtual bool checkIfWinner() const;
 	virtual int move(std::string to, int player);
-	virtual int checkMove(std::string to, int player);
 };

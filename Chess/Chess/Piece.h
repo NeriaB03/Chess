@@ -1,5 +1,6 @@
 #pragma once
 #include "Board.h"
+#include "Move.h"
 
 class Piece
 {
@@ -10,7 +11,6 @@ public:
 	virtual bool checkIfWinner() const = 0;
 	virtual std::string getType() const;
 	virtual int move(std::string to, int player) = 0;
-	virtual int checkMove(std::string to, int player) = 0;
 	virtual void setCol(int col);
 	virtual void setRow(int row);
 	virtual int getCol() const;

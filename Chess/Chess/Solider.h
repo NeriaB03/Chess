@@ -8,7 +8,6 @@ public:
 	~Solider();
 	virtual bool checkIfWinner() const;
 	virtual int move(std::string to, int player);
-	virtual int checkMove(std::string to, int player);
 	virtual void setIsAlreadyMoved(bool isAlreadyMoved);
 private:
 	bool _isAlreadyMoved;

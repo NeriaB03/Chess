@@ -143,6 +143,7 @@
     <ClInclude Include="Horseman.h" />
     <ClInclude Include="King.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="Move.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="Player.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Horseman.cpp" />
     <ClCompile Include="King.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Move.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Queen.cpp" />
