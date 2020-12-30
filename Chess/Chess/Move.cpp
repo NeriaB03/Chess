@@ -1,13 +1,15 @@
 #include "Move.h"
 
-int Move::turretMove(std::string to, int player,Board board,int pieceCol,int pieceRow,int whichPlayer)
+int Move::turretMove(std::string to, int player,Board& board,int pieceCol,int pieceRow,int whichPlayer,bool isCheckChess)
 {
     int rows = 8 * ((int)(to.at(3)) - 48);
     int rowsFrom = 8 * ((int)(to.at(1)) - 48);
     int cols = (int)(to.at(2)) - 96;
     int colsFrom = (int)(to.at(0)) - 96;
 
-    if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    if (!isCheckChess) {
+        if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    }
     if (player == 0) {
         if ((pieceCol == cols && pieceRow != rows / 8) || (pieceRow == rows / 8 && pieceCol != cols)) {
             if (board.getBoard((rows / 8) - 1, cols - 1) == '#' || islower(board.getBoard((rows / 8) - 1, cols - 1))) {
@@ -42,26 +44,26 @@ int Move::turretMove(std::string to, int player,Board board,int pieceCol,int pie
                 else {
                     if (colsFrom < cols) {
                         for (int i = colsFrom + 1; i <= cols; i++) {
-                            if (i == cols && islower(board.getBoard(rows - 1, i - 1))) {
+                            if (i == cols && islower(board.getBoard((rows/8)-1, i - 1))) {
                                 return 9;
                             }
-                            else if (board.getBoard(rows - 1, i - 1) != '#') {
+                            else if (board.getBoard((rows/8)-1, i - 1) != '#') {
                                 return 3;
                             }
-                            else if (i == cols && board.getBoard(rows - 1, i - 1) == '#') {
+                            else if (i == cols && board.getBoard((rows/8)-1, i - 1) == '#') {
                                 return 0;
                             }
                         }
                     }
                     else {
-                        for (int i = colsFrom - 1; i >= cols; i--) {
-                            if (i == cols && islower(board.getBoard(rows - 1, i - 1))) {
+                        for (int i = colsFrom-1; i >= cols; i--) {
+                            if (i == cols && islower(board.getBoard((rows/8)-1, i - 1))) {
                                 return 9;
                             }
-                            else if (board.getBoard(rows - 1, i - 1) != '#') {
+                            else if (board.getBoard((rows/8)-1, i - 1) != '#') {
                                 return 3;
                             }
-                            else if (i == cols && board.getBoard(rows - 1, i - 1) == '#') {
+                            else if (i == cols && board.getBoard((rows/8)-1, i - 1) == '#') {
                                 return 0;
                             }
                         }
@@ -108,26 +110,26 @@ int Move::turretMove(std::string to, int player,Board board,int pieceCol,int pie
                 else {
                     if (colsFrom < cols) {
                         for (int i = colsFrom + 1; i <= cols; i++) {
-                            if (i == cols && isupper(board.getBoard(rows - 1, i - 1))) {
+                            if (i == cols && isupper(board.getBoard((rows/8)-1, i - 1))) {
                                 return 9;
                             }
-                            else if (board.getBoard(rows - 1, i - 1) != '#') {
+                            else if (board.getBoard((rows/8)-1, i - 1) != '#') {
                                 return 3;
                             }
-                            else if (i == cols && board.getBoard(rows - 1, i - 1) == '#') {
+                            else if (i == cols && board.getBoard((rows/8)-1, i - 1) == '#') {
                                 return 0;
                             }
                         }
                     }
                     else {
-                        for (int i = colsFrom - 1; i >= cols; i--) {
-                            if (i == cols && isupper(board.getBoard(rows - 1, i - 1))) {
+                        for (int i = colsFrom-1; i >= cols; i--) {
+                            if (i == cols && isupper(board.getBoard((rows/8)-1, i - 1))) {
                                 return 9;
                             }
-                            else if (board.getBoard(rows - 1, i - 1) != '#') {
+                            else if (board.getBoard((rows/8)-1, i - 1) != '#') {
                                 return 3;
                             }
-                            else if (i == cols && board.getBoard(rows - 1, i - 1) == '#') {
+                            else if (i == cols && board.getBoard((rows/8)-1, i - 1) == '#') {
                                 return 0;
                             }
                         }
@@ -142,14 +144,16 @@ int Move::turretMove(std::string to, int player,Board board,int pieceCol,int pie
     }
 }
 
-int Move::horsemanMove(std::string to, int player, Board board, int pieceCol, int pieceRow,int whichPlayer)
+int Move::horsemanMove(std::string to, int player, Board& board, int pieceCol, int pieceRow,int whichPlayer,bool isCheckChess)
 {
     int rows = 8 * ((int)(to.at(3)) - 48);
     int rowsFrom = 8 * ((int)(to.at(1)) - 48);
     int cols = (int)(to.at(2)) - 96;
     int colsFrom = (int)(to.at(0)) - 96;
 
-    if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    if (!isCheckChess) {
+        if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    }
     if (player == 0) {
         if ((rows == (pieceRow * 8) + 16 && cols == pieceCol + 1) || (rows == (pieceRow * 8) + 8 && cols == pieceCol + 2)
             || (rows == (pieceRow * 8) - 8 && cols == pieceCol + 2) || (rows == (pieceRow * 8) - 16 && cols == pieceCol + 1)
@@ -182,14 +186,16 @@ int Move::horsemanMove(std::string to, int player, Board board, int pieceCol, in
     }
 }
 
-int Move::runnerMove(std::string to, int player, Board board, int pieceCol, int pieceRow,int whichPlayer)
+int Move::runnerMove(std::string to, int player, Board& board, int pieceCol, int pieceRow,int whichPlayer,bool isCheckChess)
 {
     int rows = 8 * ((int)(to.at(3)) - 48);
     int rowsFrom = 8 * ((int)(to.at(1)) - 48);
     int cols = (int)(to.at(2)) - 96;
     int colsFrom = (int)(to.at(0)) - 96;
 
-    if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    if (!isCheckChess) {
+        if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    }
     if (player == 0) {
         for (int i = 0; i < abs(cols - colsFrom) - 1; i++) {
             if (rows > rowsFrom) {
@@ -274,22 +280,24 @@ int Move::runnerMove(std::string to, int player, Board board, int pieceCol, int 
     }
 }
 
-int Move::queenMove(std::string to, int player, Board board, int pieceCol, int pieceRow,int whichPlayer)
+int Move::queenMove(std::string to, int player, Board& board, int pieceCol, int pieceRow,int whichPlayer,bool isCheckChess)
 {
-    int result = Move::turretMove(to, player, board, pieceCol, pieceRow, whichPlayer);
+    int result = Move::turretMove(to, player, board, pieceCol, pieceRow, whichPlayer,isCheckChess);
     if (result == 0 || result == 9) return result;
-    result = Move::runnerMove(to, player, board, pieceCol, pieceRow, whichPlayer);
+    result = Move::runnerMove(to, player, board, pieceCol, pieceRow, whichPlayer,isCheckChess);
     return result;
 }
 
-int Move::kingMove(std::string to, int player, Board board, int pieceCol, int pieceRow,int whichPlayer)
+int Move::kingMove(std::string to, int player, Board& board, int pieceCol, int pieceRow,int whichPlayer,bool isCheckChess)
 {
     int rows = 8 * ((int)(to.at(3)) - 48);
     int rowsFrom = 8 * ((int)(to.at(1)) - 48);
     int cols = (int)(to.at(2)) - 96;
     int colsFrom = (int)(to.at(0)) - 96;
 
-    if (whichPlayer != player) return 2;
+    if (!isCheckChess) {
+        if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    }
     if (player == 0) {
         if ((rows == (pieceRow * 8) - 8 && cols == pieceCol - 1) || (rows == (pieceRow * 8) && cols == pieceCol - 1) || (rows == (pieceRow * 8) + 8 && cols == pieceCol - 1)
             || (rows == (pieceRow * 8) - 8 && cols == pieceCol) || (rows == (pieceRow * 8) - 8 && cols == pieceCol + 1) || (rows == (pieceRow * 8) && cols == pieceCol + 1)
@@ -320,14 +328,15 @@ int Move::kingMove(std::string to, int player, Board board, int pieceCol, int pi
     }
 }
 
-int Move::pionMove(std::string to, int player, Board board, int pieceCol, int pieceRow,int whichPlayer,bool isMoved)
+int Move::pionMove(std::string to, int player, Board& board, int pieceCol, int pieceRow,int whichPlayer,bool isMoved,bool isCheckChess)
 {
     int rows = 8 * ((int)(to.at(3)) - 48);
     int rowsFrom = 8 * ((int)(to.at(1)) - 48);
     int cols = (int)(to.at(2)) - 96;
     int colsFrom = (int)(to.at(0)) - 96;
-
-    if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    if (!isCheckChess) {
+        if (board.getBoard((rowsFrom / 8) - 1, colsFrom - 1) == '#' || player != whichPlayer) return 2;
+    }
     if (player == 0) {
         if (rows <= rowsFrom) {
             return 6;
@@ -434,4 +443,51 @@ int Move::pionMove(std::string to, int player, Board board, int pieceCol, int pi
             return 6;
         }
     }
+}
+
+int Move::checkCheck(const Piece& piece, std::string kingSquare,int player,Board& board,int whichPlayer)
+{
+    int result = 0;
+    std::string to = "";
+    to += (char)(piece.getCol() + 96);
+    to += (char)(piece.getRow() + 48);
+    to += kingSquare;
+    //check the type of the piece
+    if (piece.getType().compare("Turret") == 0) {
+        result = Move::turretMove(to,player,board,piece.getCol(),piece.getRow(),whichPlayer,true);
+        if (result == 0 || result == 9) {
+            return 1;
+        }
+    }
+    else if (piece.getType().compare("Horseman") == 0) {
+        result = Move::horsemanMove(to, player, board, piece.getCol(), piece.getRow(), whichPlayer,true);
+        if (result == 0 || result == 9) {
+            return 1;
+        }
+    }
+    else if (piece.getType().compare("Runner") == 0) {
+        result = Move::runnerMove(to, player, board, piece.getCol(), piece.getRow(), whichPlayer,true);
+        if (result == 0 || result == 9) {
+            return 1;
+        }
+    }
+    else if (piece.getType().compare("Queen") == 0) {
+        result = Move::queenMove(to, player, board, piece.getCol(), piece.getRow(), whichPlayer,true);
+        if (result == 0 || result == 9) {
+            return 1;
+        }
+    }
+    else if (piece.getType().compare("King") == 0) {
+        result = Move::kingMove(to, player, board, piece.getCol(), piece.getRow(), whichPlayer,true);
+        if (result == 0 || result == 9) {
+            return 1;
+        }
+    }
+    else if (piece.getType().compare("Solider") == 0) {
+        result = Move::pionMove(to, player, board, piece.getCol(), piece.getRow(), whichPlayer,false,true);
+        if (result == 0 || result == 9) {
+            return 1;
+        }
+    }
+    return 0; //if there is no check return 0
 }

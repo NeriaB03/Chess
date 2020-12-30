@@ -19,7 +19,7 @@ int Horseman::move(std::string to, int player)
     int rowsFrom = 8 * ((int)(to.at(1)) - 48);
     int cols = (int)(to.at(2)) - 96;
     int colsFrom = (int)(to.at(0)) - 96;
-    int result = Move::horsemanMove(to, player, this->_board[0], this->_col, this->_row, this->_whichPlayer);
+    int result = Move::horsemanMove(to, player, this->_board[0], this->_col, this->_row, this->_whichPlayer,false);
     if (player == 0) {
         if (result == 0 || result == 9) {
             this->setCol(cols);

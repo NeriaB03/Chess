@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "Move.h"
 
+class Move;
 class Piece
 {
 public:

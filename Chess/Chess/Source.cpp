@@ -1,6 +1,6 @@
 /*
 This file servers as an example of how to use Pipe.h file.
-It is recommended to use the following code in your project, 
+It is recommended to use the following code in your project,
 in order to read and write information from and to the Backend
 */
 
@@ -20,15 +20,15 @@ void main()
 {
 	srand(time_t(NULL));
 
-	
+
 	Pipe p;
 	bool isConnect = p.connect();
-	
+
 	Board b("RNBKQBNRPPPPPPPP################################pppppppprnbkqbnr0");
 	Player* p1 = new Player(b, 0);
 	Player* p2 = new Player(b, 1);
-	Player tempP1(b,0);
-	Player tempP2(b,1);
+	Player tempP1(b, 0);
+	Player tempP2(b, 1);
 	Manager m(0, p1, p2);
 
 	string ans;
@@ -44,13 +44,13 @@ void main()
 			Sleep(5000);
 			isConnect = p.connect();
 		}
-		else 
+		else
 		{
 			p.close();
 			return;
 		}
 	}
-	
+
 	int currPlayer = 0;
 	char msgToGraphics[1024];
 	// msgToGraphics should contain the board string accord the protocol
@@ -58,7 +58,7 @@ void main()
 
 	strcpy_s(msgToGraphics, "rnbkqbnrpppppppp################################PPPPPPPPRNBKQBNR0"); // just example...
 	//strcpy_s(msgToGraphics, "r##k###r################################################R##K###R0"); // just example...
-	
+
 	p.sendMessageToGraphics(msgToGraphics);   // send the board string
 
 	// get message from graphics
@@ -76,11 +76,15 @@ void main()
 
 		int rows = 8 * ((int)(msgFromGraphics.at(3)) - 48);
 		int rowsFrom = 8 * ((int)(msgFromGraphics.at(1)) - 48);
+		int colsFrom = (int)(msgFromGraphics.at(0)) - 96;
+		int cols = (int)(msgFromGraphics.at(2)) - 96;
 
 		int indexInBoard = rowsFrom - (int)(msgFromGraphics.at(0)) + 96 + 7;
 
 		bool isMoved = false;
 		bool isCalledMoved = false;
+		bool isCheck = false;
+		bool isCheckHimself = false;
 		int index = 0;
 
 		if (currPlayer == 0) {
@@ -88,7 +92,7 @@ void main()
 				if (tempP1[i] != nullptr) {
 					if (tempP1[i]->checkSquare(msgFromGraphics)) {
 						result = tempP1[i]->move(msgFromGraphics, currPlayer);
-						if(result == 0 || result == 9) isMoved = true;
+						if (result == 0 || result == 9) isMoved = true;
 						isCalledMoved = true;
 						index = i;
 						break;
@@ -111,12 +115,50 @@ void main()
 		}
 
 		if (!isMoved && result == 0 && !isCalledMoved) result = 2;
-
+		if (currPlayer == 0) {
+			std::string kingSquare = "";
+			kingSquare += (char)(tempP1[3]->getCol() + 96);
+			kingSquare += (char)(tempP1[3]->getRow() + 48);
+			for (int i = 0; i < 16; i++) {
+				if (tempP2[i] != nullptr) {
+					if (Move::checkCheck(*(tempP2[i]), kingSquare, 1, tempP2.getBoard(), 1) == 1) {
+						isCheckHimself = true;
+						break;
+					}
+				}
+			}
+		}
+		else {
+			std::string kingSquare = "";
+			kingSquare += (char)(tempP2[3]->getCol() + 96);
+			kingSquare += (char)(tempP2[3]->getRow() + 48);
+			for (int i = 0; i < 16; i++) {
+				if (tempP1[i] != nullptr) {
+					if (Move::checkCheck(*(tempP1[i]), kingSquare, 0, tempP1.getBoard(), 0) == 1) {
+						isCheckHimself = true;
+						break;
+					}
+				}
+			}
+		}
+		if (isCheckHimself) {
+			result = 4;
+			if (currPlayer == 0) {
+				tempP1[index]->changeBoard((rowsFrom / 8) - 1, colsFrom - 1, (rows / 8) - 1, cols - 1, 'K');
+				tempP1[index]->setCol(colsFrom);
+				tempP1[index]->setRow(rowsFrom/8);
+			}
+			else {
+				tempP2[index]->changeBoard((rowsFrom / 8) - 1, colsFrom - 1, (rows / 8) - 1, cols - 1, 'k');
+				tempP2[index]->setCol(colsFrom);
+				tempP2[index]->setRow(rowsFrom / 8);
+			}
+		}
 		if (result == 9) {
 			if (currPlayer == 0) {
 				for (int i = 0; i < 16; i++) {
 					if (tempP2[i] != nullptr) {
-						if(tempP2[i]->getCol() == tempP1[index]->getCol() && tempP2[i]->getRow() == tempP1[index]->getRow()){
+						if (tempP2[i]->getCol() == tempP1[index]->getCol() && tempP2[i]->getRow() == tempP1[index]->getRow()) {
 							p2->replaceWithNull(i);
 							tempP2.replaceWithNull(i);
 							break;
@@ -137,14 +179,14 @@ void main()
 			}
 			result = 0;
 		}
-		if (isMoved) {
+		if (isMoved && result != 4) {
 			if (currPlayer == 0) {
 				tempP1[index]->setSquare(msgFromGraphics);
 				for (int i = 0; i < 16; i++) {
 					for (int j = 0; j < 8; j++) {
 						for (int k = 0; k < 8; k++) {
-							if(tempP1[i] != nullptr) tempP1[i]->changeBoard(j, k, tempP1[index]->getBoard(j, k));
-							if(tempP2[i] != nullptr) tempP2[i]->changeBoard(j, k, tempP1[index]->getBoard(j, k));
+							if (tempP1[i] != nullptr) tempP1[i]->changeBoard(j, k, tempP1[index]->getBoard(j, k));
+							if (tempP2[i] != nullptr) tempP2[i]->changeBoard(j, k, tempP1[index]->getBoard(j, k));
 						}
 					}
 				}
@@ -156,6 +198,34 @@ void main()
 						for (int k = 0; k < 8; k++) {
 							if (tempP1[i] != nullptr) tempP1[i]->changeBoard(j, k, tempP2[index]->getBoard(j, k));
 							if (tempP2[i] != nullptr) tempP2[i]->changeBoard(j, k, tempP2[index]->getBoard(j, k));
+						}
+					}
+				}
+			}
+
+			//check for check for other player
+			if (currPlayer == 0) {
+				std::string kingSquare = "";
+				kingSquare += (char)(tempP2[3]->getCol() + 96);
+				kingSquare += (char)(tempP2[3]->getRow() + 48);
+				for (int i = 0; i < 16; i++) {
+					if (tempP1[i] != nullptr) {
+						if (Move::checkCheck(*(tempP1[i]), kingSquare, currPlayer, tempP1.getBoard(), currPlayer) == 1) {
+							result = 1;
+							break;
+						}
+					}
+				}
+			}
+			else {
+				std::string kingSquare = "";
+				kingSquare += (char)(tempP1[3]->getCol() + 96);
+				kingSquare += (char)(tempP1[3]->getRow() + 48);
+				for (int i = 0; i < 16; i++) {
+					if (tempP2[i] != nullptr) {
+						if (Move::checkCheck(*(tempP2[i]), kingSquare, currPlayer, tempP2.getBoard(), currPlayer) == 1) {
+							result = 1;
+							break;
 						}
 					}
 				}
@@ -180,19 +250,6 @@ void main()
 		msgFromGraphics = p.getMessageFromGraphics();
 
 		//check for check
-		Player tempPlayer1(tempP1);
-		Player tempPlayer2(tempP2);
-		std::string to = "e1";
-		if (currPlayer == 0) {
-			King k(tempP2[3]->getCol(), tempP2[3]->getRow());
-			if (k.checkCheck(tempPlayer2,to) == 1) result = 1;
-			else if (k.checkCheck(tempPlayer2,to) == 2) result = 8;
-		}
-		else {
-			King k(tempP1[3]->getCol(), tempP1[3]->getRow());
-			if (k.checkCheck(tempPlayer1,to) == 1) result = 1;
-			else if (k.checkCheck(tempPlayer1,to) == 2) result = 8;
-		}
 
 		if (result == 0 || result == 1) //only if the player succesfuly moved piece pass the turn
 		{
@@ -200,9 +257,9 @@ void main()
 				currPlayer = 0;
 				for (int i = 0; i < 8; i++) {
 					for (int j = 0; j < 8; j++) {
-						tempP1[0]->changeBoard(i,j,tempP2[0]->getBoard(i,j));
+						tempP1[0]->changeBoard(i, j, tempP2[0]->getBoard(i, j));
 					}
-				}	
+				}
 			}
 			else {
 				currPlayer = 1;

@@ -129,3 +129,8 @@ void Player::printBoard() const
 	}
 	std::cout << std::endl;
 }
+
+Board& Player::getBoard() const
+{
+	return this->_board[0];
+}

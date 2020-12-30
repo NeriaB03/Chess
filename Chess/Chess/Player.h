@@ -32,6 +32,7 @@ public:
 	void setBoard(int row,int col,char piece);
 	virtual char getBoard(int row,int col) const;
 	virtual void printBoard() const;
+	virtual Board& getBoard() const;
 private:
 	std::vector<Piece*> _pieces;
 	static int _numOfAlivePieces;

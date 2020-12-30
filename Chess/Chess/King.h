@@ -11,6 +11,4 @@ public:
 	~King();
 	virtual bool checkIfWinner() const;
 	virtual int move(std::string to, int player);
-	virtual int checkCheck(Player& other,std::string to);
-	virtual bool checkMat(Player& other, std::string to);
 };
